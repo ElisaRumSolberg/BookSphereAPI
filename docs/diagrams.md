@@ -120,7 +120,7 @@ sequenceDiagram
 
 ## Homepage with Token Validation
 
-``` mermarid
+```mermaid
 sequenceDiagram
     actor User
     participant View(Index)
@@ -141,6 +141,7 @@ sequenceDiagram
         AuthService -->> View(Index): "User not authenticated"
         View(Index) ->>+ User: "Display login/register options"
     end
+
  ```
 
   **Description**
@@ -158,3 +159,50 @@ sequenceDiagram
 - The user is shown a personalized homepage (e.g., their username and private book clubs).
 - If the token is invalid or missing:
 - The user is presented with login or registration options.
+
+  ## User Login
+
+   ```mermaid
+      sequenceDiagram
+        actor User
+        participant Frontend
+       participant LoginController
+       participant LoginService
+    participant UserDatabase
+
+    User ->>+ Frontend: Fill Login Form (email, password)
+    Frontend ->>+ LoginController: POST /User/Login
+    LoginController ->>+ LoginService: Validate Credentials
+    LoginService ->>+ UserDatabase: Find User by Email
+    UserDatabase -->>- LoginService: User Found (hashed password)
+    LoginService -->> LoginController: Compare Password (valid/invalid)
+    alt Credentials are valid
+        LoginController ->> Frontend: Return JWT Token
+        Frontend -->> User: Login Successful
+    else Credentials are invalid
+        LoginController ->> Frontend: Return Error Message
+        Frontend -->> User: Display Invalid Credentials
+    end
+
+    ```
+    **Description**
+   - Form Submission:
+   - The user fills in their email and password in the login form and submits it (POST /User/Login).
+
+   - Authentication Process:
+   - LoginController:
+   - Receives the email and password from the user.
+
+   - LoginService:
+   - Searches the database for a user with the provided email.
+   - Validates the password by comparing it with the hashed password stored in the database.
+
+   - Successful Login:
+   - If the password is correct:
+   - The API generates a JWT (JSON Web Token) for the user.
+   - The user can now access the platform with authenticated privileges.
+
+   - Failed Login:
+   - If the email is not found or the password is incorrect:
+   - An error message is returned.
+   - The user is informed that their login credentials are invalid.
