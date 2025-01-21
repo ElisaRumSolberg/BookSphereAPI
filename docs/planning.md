@@ -96,7 +96,7 @@ BookSphereAPI/
 │   └── assets/
 ├── docs/
 │   ├── planning.md
-│   └── diagrams/
+│   └── ReadME.md
 ├── appsettings.json
 ├── Program.cs
 └── BookSphereAPI.sln
