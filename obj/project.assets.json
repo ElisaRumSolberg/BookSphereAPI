@@ -3181,11 +3181,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\elisa\\backend\\BookSphereAPI\\BookSphereAPI.csproj",
+      "projectUniqueName": "C:\\Users\\elisa\\BookSphereAPI\\BookSphereAPI.csproj",
       "projectName": "BookSphereAPI",
-      "projectPath": "C:\\Users\\elisa\\backend\\BookSphereAPI\\BookSphereAPI.csproj",
+      "projectPath": "C:\\Users\\elisa\\BookSphereAPI\\BookSphereAPI.csproj",
       "packagesPath": "C:\\Users\\elisa\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\elisa\\backend\\BookSphereAPI\\obj\\",
+      "outputPath": "C:\\Users\\elisa\\BookSphereAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
