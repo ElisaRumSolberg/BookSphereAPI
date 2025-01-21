@@ -122,7 +122,10 @@ BookSphereAPI/
 │   └── assets/
 ├── docs/
 │   ├── planning.md
+    ├──user_scenarios.md
 │   └── diagrams.md
+
+
 ├── appsettings.json
 ├── Program.cs
 └── BookSphereAPI.sln
