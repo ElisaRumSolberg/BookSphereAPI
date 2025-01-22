@@ -714,14 +714,4 @@ sequenceDiagram
   - The processed data is returned to the user via the frontend.
 
 ---
-
-
-      ```mermaid
-      ```
-**Description**
-
-
-      ```mermaid
-      ```
-
-**Description**     
+    
