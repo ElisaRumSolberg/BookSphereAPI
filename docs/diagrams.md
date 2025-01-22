@@ -548,7 +548,7 @@ sequenceDiagram
 ##  BookSphere System Architecture Diagram
 
       ```mermaid
-      graph TD
+      sequenceDiagram
     subgraph Frontend
         F1[User Interface]
         F2[API Requests]
@@ -619,7 +619,7 @@ sequenceDiagram
 
 ## User Roles and Authorization Diagram**
 ```mermaid
-graph TD
+sequenceDiagram
     User[User] -->|Belongs to| Role[Role]
     Role -->|Has permission for| Actions[Actions]
 
@@ -758,15 +758,4 @@ sequenceDiagram
 - **Response:**
   - The processed data is returned to the user via the frontend.
 
----
-
-
-      ```mermaid
-      ```
-**Description**
-
-
-      ```mermaid
-      ```
-
-**Description**     
+   
