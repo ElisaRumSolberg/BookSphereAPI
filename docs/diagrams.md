@@ -707,14 +707,21 @@ sequenceDiagram
     Frontend -->> User: Show Results
 ```
 
-**Description**  
-- **Request Handling:**  
-  - The frontend sends API requests to the backend, which processes them in the service layer.
-- **Database Interaction:**  
-  - The service layer interacts with the database for data retrieval or updates.
-- **Response Delivery:**  
-  - Processed results are returned to the frontend, which displays them to the user.
+ **Description**
+- **Request Processing:**
+  - User requests are sent to the API, processed by the service layer, and interact with the database.
+- **Response:**
+  - The processed data is returned to the user via the frontend.
 
 ---
 
-   
+
+      ```mermaid
+      ```
+**Description**
+
+
+      ```mermaid
+      ```
+
+**Description**     
