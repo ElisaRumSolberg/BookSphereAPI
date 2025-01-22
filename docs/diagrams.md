@@ -1,4 +1,8 @@
-## Entitetsrelasjonsdiagram
+
+
+---
+
+## Entity-Relationship Diagram (ERD)
 
 ```mermaid
 erDiagram
@@ -59,14 +63,14 @@ erDiagram
     Users ||--o{ Notifications : "receives"
     Users ||--o{ EventUserRelations : "participates"
     Events ||--o{ EventUserRelations : "manages"
-
 ```
 
-## Default Route - Static File Servisi
+---
 
-```mermaid 
+## Default Route - Static File Service
 
-  sequenceDiagram
+```mermaid
+sequenceDiagram
     participant httpRequest
     participant ApiDefaultRoute
     participant StaticFolder
@@ -76,47 +80,42 @@ erDiagram
     StaticFolder -->>- ApiDefaultRoute: Return index.html
     ApiDefaultRoute -->>- httpRequest: Serve index.html
 ```
- **Description:**
 
-- The user sends a GET request to the / route from their browser.
-- The API searches for the index.html file in the StaticFolder and, if found, returns it to the browser.
+**Description:**
+- **GET Request:** The user sends a `GET` request to the `/` route.
+- **Static File:** The API retrieves the `index.html` file from the static folder and serves it to the browser.
+
+---
 
 ## Register User
-```mermaid 
 
+```mermaid
 sequenceDiagram
     actor AnonymousUser
     participant RegistrationController
     participant RegistrationService
     participant UserDatabase
 
-    AnonymousUser ->>+ RegistrationController: /POST /Register (formData)
+    AnonymousUser ->>+ RegistrationController: POST /Register (formData)
     RegistrationController ->>+ RegistrationService: Validate input fields and hash password
     alt Validation succeeds
-        RegistrationService ->> UserDatabase: Insert new hashed user data into the database
+        RegistrationService ->> UserDatabase: Insert new hashed user data
         UserDatabase -->> RegistrationService: OK (User created)
         RegistrationService -->> RegistrationController: Success response
-        RegistrationController -->> AnonymousUser: HTTP 201 Created (New user created)
+        RegistrationController -->> AnonymousUser: HTTP 201 Created
     else Validation fails
         RegistrationService -->>- RegistrationController: Validation error
-        RegistrationController -->>- AnonymousUser: HTTP 400 Bad Request with error message
+        RegistrationController -->>- AnonymousUser: HTTP 400 Bad Request
     end
-
-
-
-
-
 ```
- **Description:**
 
-- The user fills out the registration form and submits it.
-- The RegistrationController receives the form data and validates it through the RegistrationService.
-- If Validation Succeeds:
-- User information (with the hashed password) is saved to the UserDatabase.
-- Upon successful registration, the user receives a success message (HTTP 201 Created).
-- If Validation Fails:
-- A validation error is returned for missing or invalid fields (HTTP 400 Bad Request).
+**Description:**
+- **User Input:** The user fills in the registration form and submits it.
+- **Validation:** The `RegistrationController` checks for completeness and validity of data, including password hashing.
+- **Success:** If valid, user data is stored in the database, and an HTTP 201 response is returned.
+- **Failure:** If invalid, an HTTP 400 response is returned with an error message.
 
+---
 
 ## Homepage with Token Validation
 
@@ -128,89 +127,66 @@ sequenceDiagram
     participant TokenValidator
     participant UserDatabase
 
-    User ->>+ View(Index): "Open Index Page"
-    View(Index) ->>+ AuthService: "Check token in cookies"
-    AuthService ->>+ TokenValidator: "Validate token"
-    TokenValidator ->>+ UserDatabase: "Retrieve user details"
-    UserDatabase -->>- TokenValidator: "User details (if token is valid)"
-    TokenValidator -->>- AuthService: "Validation result (valid/invalid)"
+    User ->>+ View(Index): Open Index Page
+    View(Index) ->>+ AuthService: Check token in cookies
+    AuthService ->>+ TokenValidator: Validate token
+    TokenValidator ->>+ UserDatabase: Retrieve user details
+    UserDatabase -->>- TokenValidator: User details (valid/invalid)
+    TokenValidator -->>- AuthService: Validation result
     alt Token is valid
-        AuthService -->> View(Index): "User authenticated"
-        View(Index) -->> User: "Show personalized content"
+        AuthService -->> View(Index): User authenticated
+        View(Index) -->> User: Show personalized content
     else Token is invalid or missing
-        AuthService -->> View(Index): "User not authenticated"
-        View(Index) ->>+ User: "Display login/register options"
+        AuthService -->> View(Index): User not authenticated
+        View(Index) ->>+ User: Display login/register options
     end
+```
 
- ```
+**Description:**
+- **Page Load:** The user opens the homepage, and the system checks for an authentication token.
+- **Token Validation:** If a valid token exists, personalized content is displayed.
+- **Fallback:** If the token is invalid or missing, login/registration options are shown.
 
-  **Description**
+---
 
-- User Opens the Page:
-- The user opens the homepage (Index) in their browser.
-- Token Check:
-- The AuthService checks if there is a token in the user's browser cookies.
-- If a token exists, it is validated through the TokenValidator.
-- Token Validation:
-- The TokenValidator queries the database to check if the token is valid.
-- If the token is valid, user information is returned.
-- Outcome and View:
-- If the token is valid:
-- The user is shown a personalized homepage (e.g., their username and private book clubs).
-- If the token is invalid or missing:
-- The user is presented with login or registration options.
+## User Login
 
-  ## User Login
-
-   ```mermaid
-      sequenceDiagram
-        actor User
-        participant Frontend
-       participant LoginController
-       participant LoginService
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant LoginController
+    participant LoginService
     participant UserDatabase
 
     User ->>+ Frontend: Fill Login Form (email, password)
     Frontend ->>+ LoginController: POST /User/Login
-    LoginController ->>+ LoginService: Validate Credentials
-    LoginService ->>+ UserDatabase: Find User by Email
-    UserDatabase -->>- LoginService: User Found (hashed password)
-    LoginService -->> LoginController: Compare Password (valid/invalid)
+    LoginController ->>+ LoginService: Validate credentials
+    LoginService ->>+ UserDatabase: Find user by email
+    UserDatabase -->>- LoginService: User found (hashed password)
+    LoginService -->> LoginController: Compare password (valid/invalid)
     alt Credentials are valid
         LoginController ->> Frontend: Return JWT Token
-        Frontend -->> User: Login Successful
+        Frontend -->> User: Login successful
     else Credentials are invalid
-        LoginController ->> Frontend: Return Error Message
-        Frontend -->> User: Display Invalid Credentials
+        LoginController ->> Frontend: Return error message
+        Frontend -->> User: Display invalid credentials
     end
+```
 
-    ```
-    **Description**
-   - Form Submission:
-   - The user fills in their email and password in the login form and submits it (POST /User/Login).
+**Description:**
+- **Login Request:** The user submits their email and password through the login form.
+- **Validation:** The `LoginController` validates the credentials against the database.
+- **Success:** If valid, a JWT token is generated, granting access.
+- **Failure:** An error message is returned if the credentials are invalid.
 
-   - Authentication Process:
-   - LoginController:
-   - Receives the email and password from the user.
-
-   - LoginService:
-   - Searches the database for a user with the provided email.
-   - Validates the password by comparing it with the hashed password stored in the database.
-
-   - Successful Login:
-   - If the password is correct:
-   - The API generates a JWT (JSON Web Token) for the user.
-   - The user can now access the platform with authenticated privileges.
-
-   - Failed Login:
-   - If the email is not found or the password is incorrect:
-   - An error message is returned.
-   - The user is informed that their login credentials are invalid.
+---
 
 
-   ## Create Book Club
-    ```mermaid
-   sequenceDiagram
+## Create Book Club
+
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant BookClubController
@@ -231,31 +207,29 @@ sequenceDiagram
         BookClubController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
+```
 
-     ```
-     **Description**
-- Form Submission:
-- The user fills out a form with the book club's name, description, and whether it will be public or   private.
+**Description**
+- **Form Submission:**
+  - The user fills out a form with the book club's name, description, and visibility (public or private).
+- **Validation:**
+  - The `BookClubController` receives the form data and forwards it to the `BookClubService` for validation.
+  - All required fields are checked for presence and correctness.
+- **Successful Scenario:**
+  - If validation succeeds:
+    - The book club information is saved to the database.
+    - The user receives a success message (HTTP 201 Created) confirming the club creation.
+- **Failed Scenario:**
+  - If validation fails:
+    - An error message is returned (HTTP 400 Bad Request) indicating the issues.
+    - The user is prompted to correct the errors.
 
-- Validation:
-- BookClubController:
-- Receives the form data and forwards it to the BookClubService.
-- BookClubService:
-- Checks if all required fields are present and ensures the data is in the correct format.
-- Successful Scenario:
-- If validation succeeds:
-- The book club information is saved to the database.
-- A success message is returned to the user, along with confirmation that the club was created (HTTP 201 Created).
-- Failed Scenario:
-- If validation fails:
-- An error message is returned, indicating missing or invalid information (HTTP 400 Bad Request).
-- The user is shown validation errors to correct their input.
-
+---
 
 ## Start Discussion
 
-     ```mermaid
-     sequenceDiagram
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant DiscussionController
@@ -276,31 +250,29 @@ sequenceDiagram
         DiscussionController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
+```
 
-
-
-     ```
 **Description**
-- Form Submission:
-- The user fills out the discussion form, providing the discussion title, content, and the associated book club (bookClubId).
-- Validation:
-- DiscussionController:
-- Receives the form data and forwards it to the DiscussionService for validation.
-- Validation Process:
-- Mandatory fields (title, content, book club ID) are checked for completeness and correctness.
-- Successful Scenario:
-- If validation succeeds:
-- The discussion details are saved to the database.
-- A success message is returned to the user, confirming that the discussion has been started (HTTP 201 Created).
-- Failed Scenario:
-- If validation fails:
-- An error message is returned, indicating invalid or missing information (HTTP 400 Bad Request).
-- The user is presented with validation errors to correct their input.
+- **Form Submission:**
+  - The user submits a form with the discussion title, content, and the associated book club ID.
+- **Validation:**
+  - The `DiscussionController` forwards the form data to the `DiscussionService` for validation.
+  - Checks include ensuring all required fields (title, content, bookClubId) are complete.
+- **Successful Scenario:**
+  - If validation succeeds:
+    - The discussion is saved to the database.
+    - A success message is returned (HTTP 201 Created) confirming the discussion has been started.
+- **Failed Scenario:**
+  - If validation fails:
+    - An error message is returned (HTTP 400 Bad Request) indicating missing or incorrect information.
+    - The user is shown validation errors and asked to make corrections.
 
+---
 
 ## RSVP to Event
-      ```mermaid
-     sequenceDiagram
+
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant EventController
@@ -321,72 +293,72 @@ sequenceDiagram
         EventController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
-     
-      ```
+```
 
- **Description**  
+**Description**
+- **User Action:**
+  - The user clicks the RSVP button for an event.
+- **Request Handling:**
+  - The `EventController` processes the RSVP request and forwards it to the `EventService` for validation.
+- **Successful Scenario:**
+  - If validation succeeds:
+    - The RSVP record is saved to the database.
+    - A success message (HTTP 201 Created) confirms the RSVP.
+    - The user sees a confirmation message on the frontend.
+- **Failed Scenario:**
+  - If validation fails:
+    - An error message (HTTP 400 Bad Request) is returned, detailing the issues.
+    - The user is prompted to correct the errors and try again.
 
- - User Action:
-- The user clicks the RSVP (Join) button for an event.
-- Request Handling:
-- EventController:
-- Receives the user's RSVP request and forwards it to the EventService for validation.
-- Successful Validation:
-- If the validation is successful:
-- The RSVP information (user ID and event ID) is saved to the database.
-- A success message is returned to the user, confirming the RSVP was completed (HTTP 201 Created).
-- Failed Validation:
-- If the validation fails:
-- An error message is returned, indicating missing or invalid information (HTTP 400 Bad Request).
-- The user is presented with validation errors to correct their input.
+---
+
 
 ## Send Notification
 
-    ```mermaid
-     sequenceDiagram
-     participant System
-     participant NotificationController
-     participant NotificationService
-     participant UserDatabase
-     participant NotificationQueue
-     participant User
+```mermaid
+sequenceDiagram
+    participant System
+    participant NotificationController
+    participant NotificationService
+    participant UserDatabase
+    participant NotificationQueue
+    participant User
 
-     System ->>+ NotificationController: Trigger Notification Creation
-     NotificationController ->>+ NotificationService: Create Notification
-     NotificationService ->>+ UserDatabase: Retrieve Relevant Users
-     UserDatabase -->>- NotificationService: List of Users
-     NotificationService ->>+ NotificationQueue: Add Notifications to Queue
-     NotificationQueue -->>- NotificationService: Notifications Queued
-     alt Notification Sent
-         NotificationQueue ->>+ User: Send Notification (Email/Push)
+    System ->>+ NotificationController: Trigger Notification Creation
+    NotificationController ->>+ NotificationService: Create Notification
+    NotificationService ->>+ UserDatabase: Retrieve Relevant Users
+    UserDatabase -->>- NotificationService: List of Users
+    NotificationService ->>+ NotificationQueue: Add Notifications to Queue
+    NotificationQueue -->>- NotificationService: Notifications Queued
+    alt Notification Sent
+        NotificationQueue ->>+ User: Send Notification (Email/Push)
         User -->>- NotificationQueue: Acknowledge Notification
-     else Notification Failed
-         NotificationQueue -->> NotificationService: Error Sending Notification
-     end
-       NotificationService -->> NotificationController: Success/Failure Response
-     NotificationController -->> System: Notification Process Completed
-
-    ```
-       
+    else Notification Failed
+        NotificationQueue -->> NotificationService: Error Sending Notification
+    end
+    NotificationService -->> NotificationController: Success/Failure Response
+    NotificationController -->> System: Notification Process Completed
+```
 
 **Description**  
-- Notification Creation:
-- The system initiates a notification for a specific event (e.g., a new event creation or the start of a discussion).
-- Identifying Recipients:
-- The NotificationService queries the database to retrieve a list of users who should receive the notification.
-- Queuing Notifications:
-- Before sending, notifications are added to the NotificationQueue, a background processing system.
-- Sending Notifications:
-- Successful Scenario:
-- Notifications are sent to users via email or push notifications.
-- Failed Scenario:
-- If an error occurs, it is logged, and necessary error-handling procedures are initiated.
-- Outcome:
-- The system records the status of notification delivery (successful or failed) for auditing and follow-up actions.
-  
-## Adding a Book:
-     ```mermaid
-     sequenceDiagram
+- **Notification Creation:**
+  - The system initiates a notification for a specific event (e.g., a new event creation or a discussion start).
+- **Identifying Recipients:**
+  - The `NotificationService` queries the database to identify the users who should receive the notification.
+- **Queuing Notifications:**
+  - Notifications are added to a background queue for processing.
+- **Sending Notifications:**
+  - **Successful Scenario:** Notifications are sent to users via email or push notifications.
+  - **Failed Scenario:** If an error occurs during delivery, it is logged, and error-handling is triggered.
+- **Outcome:**
+  - The system records whether notifications were successfully delivered or failed, supporting auditing and retry mechanisms.
+
+---
+
+## Adding a Book
+
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant BookController
@@ -407,22 +379,26 @@ sequenceDiagram
         BookController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
+```
 
-     ```
 **Description**
-- Adding a Book:
--    The user fills out a form with the book details (e.g., title, author, genre) to add it to a book club.
-- Successful Scenario:
--    The book details are saved to the database.
--    A success message is displayed to the user, confirming the book was added successfully.
-- Failed Scenario:
--   If there are missing or incorrect details, an error message is returned.
--   The user is notified of the issues and prompted to correct the form input.
+- **Adding a Book:**
+  - The user fills out a form with book details (e.g., title, author, genre) and submits it.
+- **Validation:**
+  - The `BookController` forwards the data to `BookService` for validation.
+- **Successful Scenario:**
+  - Valid data is saved in the database.
+  - The user receives a success message (HTTP 201 Created).
+- **Failed Scenario:**
+  - If there are errors (e.g., missing fields), an error message (HTTP 400 Bad Request) is returned.
+  - The user is prompted to correct their input.
+
+---
 
 ## Delete Book
 
-      ```mermaid
-      sequenceDiagram
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant BookController
@@ -443,30 +419,26 @@ sequenceDiagram
         BookController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
+```
 
-      ```
-
-  **Description**:
-- The user clicks the "Delete" button for a specific book.
-
-**Process**:
-1. **Request Handling**:
-   - The frontend sends a `DELETE` request to the `/Book/{id}` endpoint with the book's ID.
-2. **Successful Scenario**:
-   - `BookService` validates whether the book exists in the database.
-   - If it exists, the book is deleted from the database.
-   - A success message is returned to the user (HTTP 200 OK).
-3. **Failed Scenario**:
-   - If the book does not exist or another error occurs, an error message is returned (e.g., HTTP 404 Not Found).
+**Description**
+- **User Action:**
+  - The user clicks the delete button for a specific book.
+- **Process:**
+  - The `BookController` handles the `DELETE` request and forwards it to the `BookService`.
+  - The `BookService` validates the book ID and processes the deletion.
+- **Successful Scenario:**
+  - The book is deleted from the database.
+  - The user receives a success message (HTTP 200 OK).
+- **Failed Scenario:**
+  - If the book does not exist or an error occurs, an error message (e.g., HTTP 404 Not Found or HTTP 400 Bad Request) is returned.
 
 ---
 
-
 ## Edit Book
 
-
-      ```mermaid
-      sequenceDiagram
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant BookController
@@ -487,30 +459,26 @@ sequenceDiagram
         BookController -->> Frontend: HTTP 400 Bad Request (Error Message)
         Frontend -->> User: Show Validation Errors
     end
+```
 
+**Description**
+- **User Action:**
+  - The user edits book details (e.g., title, author, genre) via a form and submits it.
+- **Process:**
+  - The `BookController` processes the `PATCH` request and sends it to `BookService`.
+  - The `BookService` validates the input data and updates the record in the database.
+- **Successful Scenario:**
+  - The book record is updated, and the user receives a success message (HTTP 200 OK).
+- **Failed Scenario:**
+  - If validation fails or the book does not exist, an error message (HTTP 400 Bad Request) is returned.
+  - The user is prompted to correct their input.
 
-      ```
-
-
-
-**Description**:
-- The user fills out a form to edit a book's details.
-
-**Process**:
-1. **Request Handling**:
-   - The frontend sends a `PATCH` request to the `/Book/{id}` endpoint with the updated book details.
-2. **Successful Scenario**:
-   - `BookService` validates the book's existence and updates the database with the new information.
-   - A success message is returned to the user, indicating the update was completed (HTTP 200 OK).
-3. **Failed Scenario**:
-   - If required fields are missing, the book cannot be found, or another error occurs, an error message is returned (e.g., HTTP 400 Bad Request).
-
-
+---
 
 ## Search & Filter
 
-      ```mermaid
-      sequenceDiagram
+```mermaid
+sequenceDiagram
     actor User
     participant Frontend
     participant SearchController
@@ -525,30 +493,25 @@ sequenceDiagram
     SearchService -->> SearchController: Return Filtered Results
     SearchController -->> Frontend: HTTP 200 OK (Filtered Results)
     Frontend -->> User: Display Search Results
+```
 
-      ```
-**Description**
+**Description**  
+- **Search and Filtering:**
+  - The user enters a query (e.g., book title, author) or selects filtering options (e.g., genre, date) in the search bar.
+- **API Request:**
+  - The frontend sends a `GET` request to the API with the query and filter parameters.
+- **Processing Results:**
+  - The API processes the request by querying the database for matching results.
+  - The results are filtered based on the query and returned to the frontend.
+- **Displaying Results:**
+  - The frontend displays the search results to the user.
 
+---
 
-   - Search and Filtering:
-- The user enters a query (e.g., book title, author) or selects filtering options (e.g., genre, date) in the search bar.
+## BookSphere System Architecture Diagram
 
-   - API Request:
-- The frontend sends a GET request to the API with the query parameters.
-
-   - Processing Results:
-- The API searches the database for results matching the query and filtering criteria.
-- The filtered results are returned to the frontend.
-
-   - Displaying Results:
-- The frontend displays the filtered search results to the user.
-
-
-
-##  BookSphere System Architecture Diagram
-
-      ```mermaid
-      graph TD
+```mermaid
+graph TD
     subgraph Frontend
         F1[User Interface]
         F2[API Requests]
@@ -590,34 +553,26 @@ sequenceDiagram
     B2 --> B1
     B1 --> F2
     F2 --> F1
+```
 
-      ```
-
-**Description**     
-1. Frontend:
-- HTML/CSS/JavaScript: The user interface layer.
-- API Requests (AJAX/Fetch): Handles communication with the backend API for sending and retrieving data.
-- Responsive Design: Ensures compatibility across desktop and mobile devices.
-2. Backend:
-- ASP.NET Core Web API: Manages business logic and provides API endpoints.
-- Controllers: Process incoming requests and route them to the appropriate service.
-- Services: Handle business logic and data validation.
-- DTOs (Data Transfer Objects): Structures data for smooth transfer between the backend and frontend.
-- Authentication (JWT): Manages user sessions securely.
-3. Database:
-- SQLite: The storage system for application data.
-- Tables:
-- Users: Stores user data.
-- BookClubs: Stores book club details.
-- Books: Stores book information.
-- Events: Stores event details.
-- Discussions: Stores discussion data.
-- Relations: Manages relationships between users, book clubs, and events.
-
+**Description**  
+1. **Frontend:**
+   - **HTML/CSS/JavaScript:** Responsible for rendering the user interface.
+   - **API Requests:** Handles communication with the backend for data retrieval and updates.
+   - **Responsive Design:** Ensures the application is accessible on desktop and mobile devices.
+2. **Backend:**
+   - **ASP.NET Core Web API:** Manages the business logic and serves as the main API layer.
+   - **Controllers:** Processes incoming requests and routes them to appropriate services.
+   - **Services:** Contains the core business logic, including validations and computations.
+   - **Authentication:** Manages secure user sessions using JWT (JSON Web Tokens).
+3. **Database:**
+   - **SQLite:** Serves as the primary data store.
+   - **Tables:** Includes Users, BookClubs, Books, Events, Discussions, and Notifications for structured data storage and retrieval.
 
 ---
 
-## User Roles and Authorization Diagram**
+## User Roles and Authorization Diagram
+
 ```mermaid
 graph TD
     User[User] -->|Belongs to| Role[Role]
@@ -641,11 +596,11 @@ graph TD
     Guest -->|Cannot join private| BookClubs
 ```
 
-**Description**
+**Description**  
 - **Roles and Permissions:**
-  - **Admin:** Full access to create, edit, or delete book clubs, events, and manage users.
+  - **Admin:** Has full access, including creating, editing, deleting book clubs and events, and managing users.
   - **Member:** Can join book clubs, RSVP to events, and start discussions.
-  - **Guest:** Limited to viewing public book clubs.
+  - **Guest:** Can view public book clubs but cannot join private ones.
 
 ---
 
@@ -669,13 +624,13 @@ sequenceDiagram
     end
 ```
 
-**Description**
-- **Notification Creation:**
-  - Notifications are triggered by events (e.g., a new discussion or event creation).
-- **Queue Processing:**
-  - Notifications are added to a queue for processing.
-- **Delivery:**
-  - Notifications are sent to users via email or push notification. Success or failure is logged.
+**Description**  
+- **Notification Creation:**  
+  - Notifications are triggered by specific events like new discussions or event updates.
+- **Queuing and Delivery:**  
+  - Notifications are queued and sent to users via email or push notifications.
+- **Status Logging:**  
+  - Success or failure is logged for auditing and retry purposes.
 
 ---
 
@@ -696,15 +651,16 @@ sequenceDiagram
     MonitoringTool -->> Admin: Display Performance Metrics
 ```
 
-**Description**
-- **API Request and Logging:**
-  - Each API request is logged, including request and response times.
-- **Monitoring:**
-  - Logs are forwarded to a monitoring tool for performance analysis.
+**Description**  
+- **Request Logging:**  
+  - Each API request and its details are logged.
+- **Performance Monitoring:**  
+  - Logs are sent to monitoring tools for performance analysis and debugging.
 
 ---
 
-##  Admin Panel Workflow
+## Admin Panel Workflow
+
 ```mermaid
 sequenceDiagram
     actor Admin
@@ -723,15 +679,15 @@ sequenceDiagram
     AdminFrontend -->> Admin: Show Admin Dashboard
 ```
 
-**Description**
-- **Admin Actions:**
-  - The admin logs in to the dashboard and views platform statistics.
-- **Data Flow:**
-  - Data is fetched from the database and rendered in the admin panel.
+**Description**  
+- **Admin Actions:**  
+  - The admin accesses the dashboard to view statistics and manage the platform.
+- **Data Retrieval:**  
+  - Relevant data is fetched from the database and displayed on the admin dashboard.
 
 ---
 
-##  API Call Flow
+## API Call Flow
 
 ```mermaid
 sequenceDiagram
@@ -751,22 +707,14 @@ sequenceDiagram
     Frontend -->> User: Show Results
 ```
 
-
- **Description**
-- **Request Processing:**
-  - User requests are sent to the API, processed by the service layer, and interact with the database.
-- **Response:**
-  - The processed data is returned to the user via the frontend.
+**Description**  
+- **Request Handling:**  
+  - The frontend sends API requests to the backend, which processes them in the service layer.
+- **Database Interaction:**  
+  - The service layer interacts with the database for data retrieval or updates.
+- **Response Delivery:**  
+  - Processed results are returned to the frontend, which displays them to the user.
 
 ---
 
-
-      ```mermaid
-      ```
-**Description**
-
-
-      ```mermaid
-      ```
-
-**Description**     
+   
