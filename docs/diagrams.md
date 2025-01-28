@@ -38,7 +38,7 @@ erDiagram
         int MaxParticipants
         int BookClubId FK
     }
-    Notifications {
+    AppNotifications {
         int NotificationId PK
         string Message
         int UserId FK
@@ -60,7 +60,7 @@ erDiagram
     BookClubs ||--o{ Books : "contains"
     BookClubs ||--o{ BookDiscussions : "has"
     BookClubs ||--o{ Events : "organizes"
-    Users ||--o{ Notifications : "receives"
+    Users ||--o{ AppNotifications : "receives"
     Users ||--o{ EventUserRelations : "participates"
     Events ||--o{ EventUserRelations : "manages"
 ```

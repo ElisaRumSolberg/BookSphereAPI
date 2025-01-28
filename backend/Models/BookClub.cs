@@ -2,9 +2,15 @@ namespace BookSphereAPI.Models
 {
     public class BookClub
     {
-        public int BookClubId { get; set; } // Benzersiz kimlik
-        public string Name { get; set; } // Book club adı
-        public string Description { get; set; } // Book club açıklaması
-        public bool IsPublic { get; set; } // Herkese açık mı, özel mi
+        public int BookClubId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public bool IsPublic { get; set; }
+
+        // Navigasyon Özellikleri
+        public ICollection<Book> Books { get; set; } // Book club içerisindeki kitaplar
+        public ICollection<BookDiscussion> Discussions { get; set; } // Tartışmalar
+        public ICollection<UserBookClubRelation> UserRelations { get; set; } // Book club ilişkileri
+        public ICollection<Event> Events { get; set; } // Book club etkinlikleri
     }
 }
