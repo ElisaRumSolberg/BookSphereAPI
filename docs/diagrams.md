@@ -58,7 +58,7 @@ erDiagram
     Users ||--o{ UserBookClubRelations : "has"
     BookClubs ||--o{ UserBookClubRelations : "includes"
     BookClubs ||--o{ Books : "contains"
-    BookClubs ||--o{ Discussions : "has"
+    BookClubs ||--o{ BookDiscussions : "has"
     BookClubs ||--o{ Events : "organizes"
     Users ||--o{ Notifications : "receives"
     Users ||--o{ EventUserRelations : "participates"
