@@ -1,4 +1,4 @@
-@BookSphereAPI_HostAddress = http://localhost:5132
+@BookSphereAPI_HostAddress = http://localhost:5043
 
 GET {{BookSphereAPI_HostAddress}}/weatherforecast/
 Accept: application/json

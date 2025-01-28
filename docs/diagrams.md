@@ -25,7 +25,7 @@ erDiagram
         string Genre
         int BookClubId FK
     }
-    Discussions {
+    BookDiscussions {
         int DiscussionId PK
         string Title
         string Content

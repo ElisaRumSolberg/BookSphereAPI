@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "D9lGy3fiUCwAjzlXFvvSHgwLiu+3HJ2GIute9d5gQtg=",
+  "Source": "BookSphereAPI",
+  "BasePath": "_content/BookSphereAPI",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
